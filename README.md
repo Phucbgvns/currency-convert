@@ -1,4 +1,8 @@
+### Demo non exponent (for vnd)
 ![Demo GIF](currency-convert.gif)
+
+### Demo exponent (for usd)
+![Demo GIF](convert2.gif)
 
 ### add lib to file .toml
 ```toml
