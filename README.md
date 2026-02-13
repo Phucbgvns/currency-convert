@@ -1,3 +1,5 @@
+![Demo GIF](currency-convert.gif)
+
 ### add lib to file .toml
 ```toml
 [versions]
