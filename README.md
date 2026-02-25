@@ -4,6 +4,9 @@
 ### Demo exponent (for usd)
 ![Demo GIF](convert2.gif)
 
+### Note:
+Contact me to have full lib for use.
+
 ### add lib to file .toml
 ```toml
 [versions]
@@ -256,5 +259,4 @@ fun MyText(
     currencyCalc.multiply("123", "321")
     currencyCalc.divide("123", "321")
 ```
-### Note:
-Contact me to have full lib for use.
+
