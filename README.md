@@ -9,7 +9,7 @@
 [versions]
 currencyConvert = "260701"
 [libraries]
-currncyconvert = { module = "io.github.Phucbgvns:shared", version.ref = "currencyConvert" }
+currncyconvert = { module = "io.github.phucbgvns:currency-convert", version.ref = "currencyConvert" }
 ```
 ### add lib to file .gradle
 ```gradle
