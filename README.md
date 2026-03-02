@@ -28,6 +28,12 @@ kotlin {
 ````
 ### Integrate to layout
 ```kotlin
+import com.phucdx.currency.api.calc.CurrencyCalcFact
+import com.phucdx.currency.api.calc.ICurrencyCalc
+import com.phucdx.currency.api.toword.ICurrencyToWord
+import com.phucdx.currency.api.format.CurrencyFormatFact
+import com.phucdx.currency.api.format.ICurrencyFormater
+import com.phucdx.currency.api.toword.CurrencyToWordFact
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -68,11 +74,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.phucdx.currency.ext.format.TextData
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import com.phucdx.currency.ext.format.KeyPress
-import com.phucdx.currency.ext.format.TextData
+import com.phucdx.currency.core.ext.format.KeyPress
+import com.phucdx.currency.core.ext.format.TextData
 
 @Composable
 fun HomeScreen(
@@ -96,6 +101,7 @@ class HomeVm : ViewModel(), KoinComponent {
     val uiState = _uiState.asStateFlow()
     val numberFormater = CurrencyFormatFact().getCurrencyFormat()
     val currencyToWord = CurrencyToWordFact().getCurrencyToWord()
+    val currencyCalc = CurrencyCalcFact().getCurrencyCalc()
     
     fun setTextFieldValue(textFieldValue: TextFieldValue) {
         _uiState.update {
@@ -252,11 +258,89 @@ fun MyText(
 ```
 ### Additional:
 ```Kotlin
-    import com.phucdx.currency.ext.calc.currencyCalc
+import com.phucdx.currency.api.calc.CurrencyCalcFact
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-    currencyCalc.add("123", "321")
-    currencyCalc.subtract("123", "321")
-    currencyCalc.multiply("123", "321")
-    currencyCalc.divide("123", "321")
+class MultiDivTest {
+    val currencyCalc = CurrencyCalcFact().getCurrencyCalc()
+    @Test
+    fun example() {
+        var data = currencyCalc.divide("1000", "1", 5)
+
+        assertEquals("1000", data)
+        data = currencyCalc.divide("12.3", "4.56", 5) // 2.69736
+
+        assertEquals("2.6973", data)
+        data = currencyCalc.divide("-10", "4", 3)     // -2.5
+
+        assertEquals("-2.5", data)
+        data = currencyCalc.divide("1", "3", 10)      // 0.3333333333
+
+        assertEquals("0.3333333333", data)
+
+        data = currencyCalc.multiply("135", "100") // 13500
+
+        assertEquals("13500", data)
+        data = currencyCalc.multiply("12.3", "4.56")  // 56.088
+
+        assertEquals("56.088", data)
+        data =currencyCalc.multiply("-1.2", "3")     // -3.6
+
+        assertEquals("-3.6", data)
+        data = currencyCalc.divide("-12.3", "4.56", 5) // 2.6973
+
+        assertEquals("-2.6973", data)
+        data = currencyCalc.divide("-10", "-4", 3)     // 2.5
+
+        assertEquals("2.5", data)
+    }
+
+    @Test
+    fun example() {
+        checkCalc()
+    }
+
+    private fun checkCalc() {
+        val tests = listOf(
+            // ===== add =====
+            "0" to Triple("11", "-11", "add"),
+            "10" to Triple("12", "-2", "add"),
+            "-10" to Triple("-11", "1", "add"),
+            "-10" to Triple("1", "-11", "add"),
+            "-4.75" to Triple("-1.5", "-3.25", "add"),
+            "1.75" to Triple("-1.5", "3.25", "add"),
+            "1.75" to Triple("3.25", "-1.5", "add"),
+            "12.75" to Triple("10.5", "2.25", "add"),
+            "2.00" to Triple("1.05", "0.95", "add"),
+            "0.001" to Triple("0.01", "-0.009", "add"),
+
+            // ===== subtract =====
+            "22" to Triple("11", "-11", "sub"),
+            "-12" to Triple("-11", "1", "sub"),
+            "12" to Triple("11", "-1", "sub"),
+            "10" to Triple("-1", "-11", "sub"),
+            "12" to Triple("1", "-11", "sub"),
+            "1.75" to Triple("-1.5", "-3.25", "sub"),
+            "-4.75" to Triple("-1.5", "3.25", "sub"),
+            "4.75" to Triple("3.25", "-1.5", "sub"),
+            "8.25" to Triple("10.5", "2.25", "sub"),
+            "0.10" to Triple("1.05", "0.95", "sub"),
+            "0.019" to Triple("0.01", "-0.009", "sub"),
+            "0.00001" to Triple("1.0001", "1.00009", "sub")
+        )
+
+        println("=== TEST addDecimalStrings & subtractDecimalStrings ===")
+        for ((a, c) in tests) {
+            val result = when (c.third) {
+                "add" -> currencyCalc.add(c.first, c.second)
+                else -> currencyCalc.subtract(c.first, c.second)
+            }
+            println("${c.first} ${if (c.third == "add") "+" else "-"} ${c.second} = $result")
+            assertEquals(a, result)
+        }
+    }
+}
+}
 ```
 
